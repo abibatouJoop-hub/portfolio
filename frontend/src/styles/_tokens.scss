@@ -1,0 +1,106 @@
+// Couleurs et dimensions de la maquette. Tout composant utilise ces variables,
+// ce qui suffit à faire fonctionner le mode sombre partout.
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f2f4f7;
+  --surface-3: #e3e8ef; // emplacements d'image
+  --border: #e5e8ed;
+  --border-strong: #d3d8e0;
+
+  --text: #1b2433;
+  --text-muted: #5b6576;
+  --text-soft: #8a93a3;
+
+  --primary: #2c5f9e;
+  --primary-hover: #244f85;
+  --primary-soft: #e6eef8;
+  --on-primary: #ffffff;
+
+  --contrast: #1b2433; // bouton « Me contacter », bloc contact, panneau de connexion
+  --on-contrast: #ffffff;
+  --contrast-surface: #232d3d;
+  --contrast-border: #2f3a4c;
+  --accent: #a8c8f0; // bouton « Envoyer le message »
+  --on-accent: #1b2433;
+
+  --success: #1f8a52;
+  --success-soft: #e3f4ea;
+  --warning: #9a6a00;
+  --warning-soft: #fbf0d4;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow: 0 8px 24px rgb(16 24 40 / 0.08);
+}
+
+@mixin dark-tokens {
+  color-scheme: dark;
+
+  --bg: #11151c;
+  --surface: #19202b;
+  --surface-2: #202836;
+  --surface-3: #263040;
+  --border: #283242;
+  --border-strong: #354155;
+
+  --text: #e8edf4;
+  --text-muted: #a0aab9;
+  --text-soft: #737e8f;
+
+  --primary: #8db4e8;
+  --primary-hover: #a7c5ee;
+  --primary-soft: #1e2c41;
+  --on-primary: #10151d;
+
+  --contrast: #e8edf4;
+  --on-contrast: #11151c;
+  --contrast-surface: #202836;
+  --contrast-border: #2c3646;
+  --accent: #a8c8f0;
+  --on-accent: #11151c;
+
+  --success: #5cc98d;
+  --success-soft: #16301f;
+  --warning: #e7b94b;
+  --warning-soft: #352a10;
+  --danger: #f08a80;
+  --danger-soft: #3a1d1b;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+
+:root[data-theme='dark'] {
+  @include dark-tokens;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-tokens;
+  }
+}
+
+:root {
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: 'Manrope', 'Inter', system-ui, sans-serif;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --container: 1120px;
+  --gutter: 24px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 16px;
+  }
+}

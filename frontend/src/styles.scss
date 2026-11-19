@@ -1,0 +1,6 @@
+// Styles globaux : charte (tokens), base, composants réutilisables, site public, admin.
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/components';
+@use 'styles/site';
+@use 'styles/admin';
