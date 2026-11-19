@@ -96,6 +96,10 @@ Toutes les routes sont préfixées par **`/api/v1`**. Les réponses suivent le f
 | POST | `/auth/login` | Connexion — **5 essais par minute** |
 | POST | `/auth/logout` | Déconnexion |
 | GET | `/auth/me` | Utilisateur connecté |
+| POST | `/auth/forgot-password` | « Mot de passe oublié ? » : envoie un lien par e-mail `{ email }` |
+| POST | `/auth/reset-password` | Nouveau mot de passe `{ token, email, password, password_confirmation }` |
+
+Le lien reçu par e-mail ouvre la page Angular `/admin/reset-password?token=…&email=…` (réglable avec `FRONTEND_PASSWORD_RESET_PATH`). Il expire au bout de 60 minutes et ne sert qu'une fois.
 
 ### Administration (préfixe `/admin`, connexion obligatoire)
 
@@ -124,7 +128,8 @@ Les fichiers s'envoient en `FormData`, dans le champ **`file`**.
 - **Un seul compte admin**, sans route d'inscription : il est créé par `AdminUserSeeder` à partir de `ADMIN_EMAIL` et `ADMIN_PASSWORD` du `.env` (jamais versionné).
 - **Sanctum en mode SPA** : la session est portée par un cookie `HttpOnly`, avec un jeton CSRF. Aucun jeton n'est stocké dans le navigateur.
 - **CORS** limité à l'origine Angular (`FRONTEND_URL`), avec `supports_credentials`.
-- **Limites de débit** : connexion (5/min par email + IP), contact (5/h par IP) → `429`.
+- **Limites de débit** : connexion (5/min par email + IP), mot de passe oublié (3/min et 10/h par IP), contact (5/h par IP) → `429`.
+- **Mot de passe oublié** : même réponse que l'adresse existe ou non (on ne peut pas deviner l'email admin), jeton haché à usage unique, et toutes les sessions ouvertes sont déconnectées après la réinitialisation.
 - **Mot de passe** : 12 caractères minimum, avec majuscules, minuscules et chiffres.
 - **Formulaire de contact** : champ piège `website` contre les robots, adresse IP enregistrée, contenu échappé dans l'e-mail.
 - **Fichiers** : nom aléatoire, type et taille vérifiés (images jpg/png/webp ≤ 2 Mo, SVG refusé ; CV en PDF ≤ 5 Mo), ancien fichier supprimé au remplacement.
@@ -190,7 +195,7 @@ cd backend
 php artisan test
 ```
 
-**102 tests** (390 vérifications), exécutés sur une vraie base PostgreSQL (`portfolio_test`), pour que les contraintes `CHECK`, `jsonb` et `inet` soient testées comme en production.
+**111 tests** (422 vérifications), exécutés sur une vraie base PostgreSQL (`portfolio_test`), pour que les contraintes `CHECK`, `jsonb` et `inet` soient testées comme en production.
 
 | Dossier | Contenu |
 |---|---|
@@ -214,7 +219,7 @@ Le backend suit les étapes de mise en place du document d'architecture :
 4. **Models et factories** — casts, relations, scopes, mode strict, factories avec états (`draft()`, `current()`, `archived()`…).
 5. **Seeders** — compte admin depuis `.env`, profil pré-rempli, contenu de démonstration en local (relançables sans doublon).
 6. **Ressources** — projets, compétences, expériences, profil, messages : FormRequest → Service → Controller → Resource → route → tests, avec mise en cache du site public.
-7. **Authentification** — login, logout, me, limites de débit, changement de mot de passe, tableau de bord.
+7. **Authentification** — login, logout, me, limites de débit, changement de mot de passe, « mot de passe oublié ? », tableau de bord.
 8. **Fichiers** — `MediaService`, `storage:link`, couverture de projet, photo et CV.
 9. **Contact** — route publique, champ piège, événement `ContactMessageReceived` et e-mail en file d'attente.
 10. **Angular** — 🚧 prochaine étape.

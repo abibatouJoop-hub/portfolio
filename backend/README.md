@@ -14,5 +14,5 @@ php artisan migrate --seed
 php artisan storage:link
 php artisan serve             # http://localhost:8000/api/v1
 php artisan queue:work        # e-mails du formulaire de contact
-php artisan test              # 102 tests sur PostgreSQL (base portfolio_test)
+php artisan test              # 111 tests sur PostgreSQL (base portfolio_test)
 ```

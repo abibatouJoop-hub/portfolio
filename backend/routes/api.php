@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Auth\PasswordResetController;
 use App\Http\Controllers\Api\V1\Site;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,12 @@ Route::prefix('v1')->group(function () {
     // ------------------------------------------------------------ Authentification
     // Avant le login, Angular appelle GET /sanctum/csrf-cookie (route fournie par Sanctum).
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login');
+
+    // « Mot de passe oublié ? » : demande du lien, puis nouveau mot de passe avec le jeton reçu.
+    Route::middleware('throttle:password-reset')->group(function () {
+        Route::post('auth/forgot-password', [PasswordResetController::class, 'forgot']);
+        Route::post('auth/reset-password', [PasswordResetController::class, 'reset']);
+    });
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);

@@ -40,7 +40,14 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(Str::lower((string) $request->input('email')).'|'.$request->ip()));
 
-        // Formulaire de contact (étape 9) : 5 messages par heure et par IP (anti spam).
+        // Mot de passe oublié / réinitialisation : 3 par minute et 10 par heure par IP
+        // (évite d'inonder la boîte mail de l'admin et de tester des jetons en masse).
+        RateLimiter::for('password-reset', fn (Request $request) => [
+            Limit::perMinute(3)->by('minute|'.$request->ip()),
+            Limit::perHour(10)->by('hour|'.$request->ip()),
+        ]);
+
+        // Formulaire de contact : 5 messages par heure et par IP (anti spam).
         RateLimiter::for('contact', fn (Request $request) => Limit::perHour(5)->by($request->ip()));
     }
 }
