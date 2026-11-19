@@ -1194,6 +1194,28 @@ label.btn.disabled {
   color: var(--primary);
 }
 
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+
+  > label {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+.link-subtle {
+  color: var(--primary);
+  font-size: 13px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .login-back {
   display: inline-flex;
   align-items: center;

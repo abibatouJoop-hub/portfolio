@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileApi } from '../../core/api/profile.api';
 import { Profile } from '../../core/api/models';
 import { AuthService } from '../../core/auth/auth.service';
+import { strongPassword } from '../../core/auth/password.validators';
 import { applyServerErrors, controlError, errorMessage, fieldErrors } from '../../core/http/errors';
 import { ToastService } from '../../core/ui/toast.service';
 import { InitialsPipe } from '../../shared/format';
@@ -13,14 +14,6 @@ import { PageHeader } from '../layout/page-header';
 const URL_PATTERN = /^https?:\/\/.+/i;
 
 type LinkGroup = FormGroup<{ platform: FormControl<string>; url: FormControl<string> }>;
-
-/** Même règle que le backend (Password::defaults) : 12 caractères, majuscule, minuscule, chiffre. */
-function strongPassword(control: AbstractControl): ValidationErrors | null {
-  const v = String(control.value ?? '');
-  if (!v) return null;
-  const ok = v.length >= 12 && /[a-z]/.test(v) && /[A-Z]/.test(v) && /\d/.test(v);
-  return ok ? null : { server: '12 caractères minimum, avec majuscules, minuscules et chiffres.' };
-}
 
 @Component({
   selector: 'app-admin-profile',

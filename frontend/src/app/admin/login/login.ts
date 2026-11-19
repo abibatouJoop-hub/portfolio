@@ -1,27 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { controlError, errorMessage, fieldErrors } from '../../core/http/errors';
 import { Icon } from '../../shared/icon';
+import { AuthAside } from './auth-aside';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, Icon],
+  imports: [ReactiveFormsModule, RouterLink, Icon, AuthAside],
   template: `
     <div class="login-page">
-      <aside class="login-aside">
-        <div class="sidebar-brand">
-          <span class="logo-mark light">AJ</span>
-          <strong>Portfolio · Admin</strong>
-        </div>
-        <div class="login-pitch">
-          <h1>Gardez votre portfolio à jour, en quelques clics.</h1>
-          <p>Ajoutez vos nouveaux projets, compétences et expériences : ils apparaissent immédiatement sur votre site public.</p>
-        </div>
-        <small>Accès strictement réservé à l'administratrice.</small>
-      </aside>
+      <app-auth-aside />
 
       <main class="login-main">
         <form class="card login-card form-grid" [formGroup]="form" (ngSubmit)="submit()" novalidate>
@@ -40,7 +31,12 @@ import { Icon } from '../../shared/icon';
           </div>
 
           <div class="field">
-            <label for="password">Mot de passe</label>
+            <div class="label-row">
+              <label for="password">Mot de passe</label>
+              <a routerLink="/admin/mot-de-passe-oublie" [queryParams]="{ email: form.controls.email.value || null }" class="link-subtle">
+                Mot de passe oublié ?
+              </a>
+            </div>
             <input id="password" type="password" class="input" formControlName="password" placeholder="••••••••" autocomplete="current-password" />
             @if (err('password'); as e) {
               <small class="field-error">{{ e }}</small>
@@ -68,13 +64,15 @@ import { Icon } from '../../shared/icon';
     </div>
   `,
 })
-export class Login {
+export class Login implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder).nonNullable;
 
   /** ?retour=/admin/projets : page demandée avant la redirection. */
   readonly retour = input<string>();
+  /** ?email=… : pré-remplit l'adresse (retour depuis « Nouveau mot de passe »). */
+  readonly email = input<string>();
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -84,6 +82,11 @@ export class Login {
     password: ['', Validators.required],
     remember: [false],
   });
+
+  ngOnInit(): void {
+    const email = this.email();
+    if (email) this.form.controls.email.setValue(email);
+  }
 
   protected err(name: string): string | null {
     return controlError(this.form.get(name));

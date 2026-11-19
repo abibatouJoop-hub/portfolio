@@ -66,6 +66,22 @@ export class AuthService {
     this.checked = Promise.resolve(false);
   }
 
+  /** « Mot de passe oublié ? » : le backend répond la même chose que l'adresse existe ou non. */
+  forgotPassword(email: string): Observable<string> {
+    return this.csrf().pipe(
+      switchMap(() => this.http.post<{ message: string }>(`${API}/auth/forgot-password`, { email })),
+      map((r) => r.message),
+    );
+  }
+
+  /** Nouveau mot de passe avec le jeton reçu par e-mail. */
+  resetPassword(data: { token: string; email: string; password: string; password_confirmation: string }): Observable<string> {
+    return this.csrf().pipe(
+      switchMap(() => this.http.post<{ message: string }>(`${API}/auth/reset-password`, data)),
+      map((r) => r.message),
+    );
+  }
+
   updatePassword(data: { current_password: string; password: string; password_confirmation: string }): Observable<void> {
     return this.http.put<void>(`${ADMIN_API}/password`, data);
   }
